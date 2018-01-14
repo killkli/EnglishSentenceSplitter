@@ -18,3 +18,7 @@
 英漢字典檔: lemmatizer/js/dict_advanced.js
 
 主要的語法都直接寫在sentence_splitter_advanced.html中了
+
+
+sentence_splitter_boyo.html 是為博幼基金會製作的版本，
+差異在於單字程度可以設定為博幼基金會英文教材的單字程度
