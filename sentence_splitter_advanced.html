@@ -162,7 +162,7 @@
 	
 	$(document).ready( function() {
 	  $("#divide-article").click( function(){
-		var tmp_article = $("#article").val().replace(/\n/g," ").replace(/\b(\w{1,}\.\w{1,})\./g,"$1&period;").replace(/(Dr|Esq|Hon|Jr|Mr|Mrs|Ms|Messrs|Mmes|Msgr|Prof|Rev|Rt|Sr|St)\./g,"$1&period;").replace(/\b(\w?)\.(\w)\b/g,"$1&period;$2").match(/(.*?)([\.\?\!])/g);
+		var tmp_article = $("#article").val().replace(/\n/g," ").replace(/\b(\w{1,}\.\w{1,})\./g,"$1&#x2E;").replace(/(Dr|Esq|Hon|Jr|Mr|Mrs|Ms|Messrs|Mmes|Msgr|Prof|Rev|Rt|Sr|St)\./g,"$1&#x2E;").replace(/\b(\w?)\.(\w)\b/g,"$1&#x2E;$2").match(/(.*?)([\.\?\!])/g);
 		
 
 		
@@ -183,7 +183,7 @@
       });
 	  
 	  $("#divide-article2").click( function(){
-		var tmp_article = $("#article").val().replace(/\n/g," ").replace(/\b(\w{1,}\.\w{1,})\./g,"$1&period;").replace(/(Dr|Esq|Hon|Jr|Mr|Mrs|Ms|Messrs|Mmes|Msgr|Prof|Rev|Rt|Sr|St)\./g,"$1&period;").replace(/\b(\w?)\.(\w)\b/g,"$1&period;$2").match(/(.*?)([\.\?\!])/g);
+		var tmp_article = $("#article").val().replace(/\n/g," ").replace(/\b(\w{1,}\.\w{1,})\./g,"$1&#x2E;").replace(/(Dr|Esq|Hon|Jr|Mr|Mrs|Ms|Messrs|Mmes|Msgr|Prof|Rev|Rt|Sr|St)\./g,"$1&#x2E;").replace(/\b(\w?)\.(\w)\b/g,"$1&#x2E;$2").match(/(.*?)([\.\?\!])/g);
 		
 
 		
