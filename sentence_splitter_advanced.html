@@ -165,7 +165,7 @@
 		var tmp_article = $("#article").val().replace(/\n/g," ").replace(/\b(\w{1,}\.\w{1,})\./g,"$1&#x2E;").replace(/(Dr|Esq|Hon|Jr|Mr|Mrs|Ms|Messrs|Mmes|Msgr|Prof|Rev|Rt|Sr|St)\./g,"$1&#x2E;").replace(/\b(\w?)\.(\w)\b/g,"$1&#x2E;$2").match(/(.*?)([\.\?\!])/g);
 		
 		var a_word_count = $("#article").val().toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").length;
-		var base_grade = (100 / a_word_count);
+		var base_grade = ($("#totalgrade").val() / a_word_count);
 		
 		var level = $("#level").val();
 		
@@ -184,7 +184,7 @@
 			words_html = lookupWord(e,level,lemma);
 			work_result = work_result + words_html;
 			counter ++;
-		});work_result = "<h3>總分：" + grade + "分</h3>" + work_result;
+		});work_result = "<h3>總分：" + grade + "分</h3>" + work_result; //在開頭增加總分資訊
 		$("#sentence-result").html(work_result);
       });
 	  
@@ -192,7 +192,7 @@
 		var tmp_article = $("#article").val().replace(/\n/g," ").replace(/\b(\w{1,}\.\w{1,})\./g,"$1&#x2E;").replace(/(Dr|Esq|Hon|Jr|Mr|Mrs|Ms|Messrs|Mmes|Msgr|Prof|Rev|Rt|Sr|St)\./g,"$1&#x2E;").replace(/\b(\w?)\.(\w)\b/g,"$1&#x2E;$2").match(/(.*?)([\.\?\!])/g);
 		
 		var a_word_count = $("#article").val().toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").length;
-		var base_grade = 100 / a_word_count;
+		var base_grade = $("#totalgrade").val() / a_word_count;
 		
 		var level = $("#level").val();
 		
@@ -200,7 +200,6 @@
 		
 		var work_result = "";
 		var words_html = "";
-		var counter = 1;
 		var counter = 1;
 		var grade = 0;
 		var s_word_count = 0;
@@ -256,6 +255,7 @@
 		<h3 id="showlevel">單字程度：<span id="slevel2">高中2級</span></h3>
 		<p><input type="range" id="level" min="0" max="7"  value=3></p>
 		<input id="result_words" type="hidden" />
+		<h4>出題總分<input id="totalgrade" type="number" /></h4>
 		<textarea id='article' rows="20"></textarea>
 	</form>
   </div>

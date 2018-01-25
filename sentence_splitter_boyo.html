@@ -68,7 +68,7 @@
 	lemma = lemma.concat(rare_lemmas);
 	function lookupWord(sentence,prohibit){
 		//抓出單字陣列
-        var tmp_words = sentence.toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").sort().filter(function(elem, index, self) {
+        var tmp_words = sentence.toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").filter(function(elem, index, self) {
 			return index == self.indexOf(elem) && elem.length > 2;
 		});
 		var words = [];
@@ -79,7 +79,7 @@
 			words.push(word);
 		});
 		
-		words=words.sort().filter(function(elem, index, self) {
+		words=words.filter(function(elem, index, self) {
 			return index == self.indexOf(elem);
 		});
 
@@ -140,6 +140,7 @@
 			html_word += (j % 2) ? "解釋":"單字" ;
 			html_word = html_word + "</th>\n";
 		}html_word  = html_word + "</tr>\n";
+
 		var w_index = 0;
 		while(w_index != words.length){
 			html_word = html_word + "<tr>\n";
@@ -170,6 +171,10 @@
 	  $("#divide-article").click( function(){
 		var tmp_article = $("#article").val().replace(/\n/g," ").replace(/\b(\w{1,}\.\w{1,})\./g,"$1&#x2E;").replace(/(Dr|Esq|Hon|Jr|Mr|Mrs|Ms|Messrs|Mmes|Msgr|Prof|Rev|Rt|Sr|St)\./g,"$1&#x2E;").replace(/\b(\w?)\.(\w)\b/g,"$1&#x2E;$2").match(/(.*?)([\.\?\!])/g);
 		
+		//自動配分功能，根據文章字數算出每個字的分數權重
+		var a_word_count = $("#article").val().toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").length;
+		var base_grade = ($("#totalgrade").val() / a_word_count);
+		
 		var level = $("#level").val();
 		
 		//words_html = lookupWord($("#article").val(),level);
@@ -177,20 +182,32 @@
 		var work_result = "";
 		var counter = 1;
 		var space = "&nbsp;";
+		//一些自動配分需要的變數
+		var grade = 0;
+		var s_word_count = 0;
+		
 		tmp_article.forEach(function(e) {
-			work_result = work_result + "<h3>第"+counter+"句:</h3><p>" + e + "</p>\n";
+			//計算字數，配分
+			s_word_count = e.toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").length;
+			s_grade = Math.floor(s_word_count * base_grade);
+			grade += s_grade; //計算總分，事後可調整回一百分用
+			
+			work_result = work_result + "<h3>第"+counter+"句，"+s_grade+"分:</h3><p>" + e + "</p>\n";
 			work_result += "<p>答：<u>　　　　　　　　　　　　　　　　　　　　　</u></p>\n";
 			words_html = lookupWord(e,level,lemma);
 			work_result = work_result + words_html;
 			counter ++;
-		});
+		});work_result = "<h3>總分：" + grade + "分</h3>" + work_result; //在開頭增加總分資訊
 		$("#sentence-result").html(work_result);
       });
 	  
 	  $("#divide-article2").click( function(){
 		var tmp_article = $("#article").val().replace(/\n/g," ").replace(/\b(\w{1,}\.\w{1,})\./g,"$1&#x2E;").replace(/(Dr|Esq|Hon|Jr|Mr|Mrs|Ms|Messrs|Mmes|Msgr|Prof|Rev|Rt|Sr|St)\./g,"$1&#x2E;").replace(/\b(\w?)\.(\w)\b/g,"$1&#x2E;$2").match(/(.*?)([\.\?\!])/g);
 		
-
+		//自動配分功能，根據文章字數算出每個字的分數權重
+		var a_word_count = $("#article").val().toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").length;
+		
+		var base_grade = $("#totalgrade").val() / a_word_count;
 		
 		var level = $("#level").val();
 		
@@ -199,17 +216,28 @@
 		var work_result = "";
 		var words_html = "";
 		var counter = 1;
+		
+		//配分需要變數
+		var grade = 0;
+		var s_word_count = 0;
+		
 		work_result += "<h2>本文開始</h2>\n";
 		work_result += "<p>\n";
 		tmp_article.forEach(function(e) {
 			var sentence_number = counter > 20 ? (12880 + counter - 20) : (9311 + counter);
-			work_result += e + String.fromCharCode(sentence_number);
-			words_html += "<h3>第" + counter + "句作答區:</h3>\n";
+			work_result += String.fromCharCode(sentence_number)+ e; 
+			//自動配分功能
+			s_word_count = e.toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").length;
+			s_grade = Math.floor(s_word_count * base_grade);
+			grade += s_grade;
+			
+			words_html += "<h3>第" + counter + "句，"+s_grade+"分</h3>\n" + e + "<p>作答區:</p>\n";
 			words_html += "<p>___________________________________________________________________</p>\n";
 			words_html += "<p>單字表:</p>\n";
 			words_html += lookupWord(e,level,lemma);
 			counter++;
 		});
+		work_result = "<h3>總分：" + grade + "分</h3>" + work_result;
 		work_result += "</p>\n";
 		work_result = work_result + words_html;
 		$("#sentence-result").html(work_result);
@@ -253,6 +281,7 @@
 		<h3 id="showlevel">單字程度：<span id="slevel2">博幼國小400單字全</span></h3>
 		<p><input type="range" id="level" min="1" max="86"  value=45 style="width:25em"></p>
 		<input id="result_words" type="hidden" />
+		<h4>出題總分<input id="totalgrade" type="number" /></h4>
 		<textarea id='article' rows="20"></textarea>
 	</form>
   </div>
