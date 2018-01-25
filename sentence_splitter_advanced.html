@@ -66,7 +66,7 @@
 
 	function lookupWord(sentence,prohibit,lemma){
 		//抓出單字陣列
-        var tmp_words = sentence.toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").sort().filter(function(elem, index, self) {
+        var tmp_words = sentence.toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").filter(function(elem, index, self) {
 			return index == self.indexOf(elem) && elem.length > 2;
 		});
 		
@@ -79,7 +79,7 @@
 		});
 		
 		
-		words=words.sort().filter(function(elem, index, self) {
+		words=words.filter(function(elem, index, self) {
 			return index == self.indexOf(elem);
 		});
 		
@@ -164,7 +164,8 @@
 	  $("#divide-article").click( function(){
 		var tmp_article = $("#article").val().replace(/\n/g," ").replace(/\b(\w{1,}\.\w{1,})\./g,"$1&#x2E;").replace(/(Dr|Esq|Hon|Jr|Mr|Mrs|Ms|Messrs|Mmes|Msgr|Prof|Rev|Rt|Sr|St)\./g,"$1&#x2E;").replace(/\b(\w?)\.(\w)\b/g,"$1&#x2E;$2").match(/(.*?)([\.\?\!])/g);
 		
-
+		var a_word_count = $("#article").val().toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").length;
+		var base_grade = (100 / a_word_count);
 		
 		var level = $("#level").val();
 		
@@ -172,20 +173,26 @@
 		
 		var work_result = "";
 		var counter = 1;
+		var grade = 0;
+		var s_word_count = 0;
 		tmp_article.forEach(function(e) {
-			work_result = work_result + "<h3>第"+counter+"句:</h3><p>" + e + "</p>\n";
-			work_result += "<p>答：<u>　　　　　　　　　　　　　　　　　　　　　</u></p>\n";
+			s_word_count = e.toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").length;
+			s_grade = Math.floor(s_word_count * base_grade);
+			grade += s_grade;
+			work_result = work_result + "<h3>第"+counter+"句，"+s_grade+"分:</h3><p>" + e + "</p>\n";
+			work_result += "<p>答：______________________________________________________</p>\n";
 			words_html = lookupWord(e,level,lemma);
 			work_result = work_result + words_html;
 			counter ++;
-		});
+		});work_result = "<h3>總分：" + grade + "分</h3>" + work_result;
 		$("#sentence-result").html(work_result);
       });
 	  
 	  $("#divide-article2").click( function(){
 		var tmp_article = $("#article").val().replace(/\n/g," ").replace(/\b(\w{1,}\.\w{1,})\./g,"$1&#x2E;").replace(/(Dr|Esq|Hon|Jr|Mr|Mrs|Ms|Messrs|Mmes|Msgr|Prof|Rev|Rt|Sr|St)\./g,"$1&#x2E;").replace(/\b(\w?)\.(\w)\b/g,"$1&#x2E;$2").match(/(.*?)([\.\?\!])/g);
 		
-
+		var a_word_count = $("#article").val().toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").length;
+		var base_grade = 100 / a_word_count;
 		
 		var level = $("#level").val();
 		
@@ -194,17 +201,26 @@
 		var work_result = "";
 		var words_html = "";
 		var counter = 1;
+		var counter = 1;
+		var grade = 0;
+		var s_word_count = 0;
+		
 		work_result += "<h2>本文開始</h2>\n";
 		work_result += "<p>\n";
+
 		tmp_article.forEach(function(e) {
 			var sentence_number = counter > 20 ? (12880 + counter - 20) : (9311 + counter);
-			work_result += e + String.fromCharCode(sentence_number);
-			words_html += "<h3>第" + counter + "句：</h3>\n" + e + "<p>作答區:</p>\n";
-			words_html += "<p>___________________________________________________________________</p>\n";
+			work_result += String.fromCharCode(sentence_number)+ e; 
+			s_word_count = e.toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").length;
+			s_grade = Math.floor(s_word_count * base_grade);
+			grade += s_grade;
+			words_html += "<h3>第" + counter + "句，"+s_grade+"分：</h3>\n" + e + "<p>作答區:</p>\n";
+			words_html += "<p>______________________________________________________</p>\n";
 			words_html += "<p>單字表:</p>\n";
 			words_html += lookupWord(e,level,lemma);
 			counter++;
 		});
+		work_result = "<h3>總分：" + grade + "分</h3>" + work_result;
 		work_result += "</p>\n";
 		work_result = work_result + words_html;
 		$("#sentence-result").html(work_result);
