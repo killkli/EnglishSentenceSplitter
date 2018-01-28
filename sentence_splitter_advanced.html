@@ -4,244 +4,67 @@
 <meta http-equiv="Content-Type" content="text/html">
 <head>
 	<meta charset="UTF-8">
-	<title></title>
-	<style>
-		div.input{
-			display:block;
-			padding:5px;
-			top: 10%;
-			left:5%;
-			width: 40%;
-			height:80%;
-			position:fixed;
-			border-style: solid;
-			background: white;
-			z-index: 0;
-			overflow-y: scroll;
-			position:fixed;
-			border-style: solid;
-		}
-		div.result{
-			display:block;
-			padding:5px;
-			top: 10%;
-			right:5%;
-			width: 40%;
-			height:80%;
-			position:fixed;
-			border-style: solid;
-			background: white;
-			z-index: 0;
-			overflow-y: scroll;
-			position:fixed;
-			border-style: solid;
-		}
-		tr,th,td{
-			border-style: solid;
-		}
-		textarea{
-			width: 80%;
-			}
-		button{
-			width: 12em;
-			height: 2em;
-			font-size: 24px;
-			}
-		</style>
+	<title>英文閱讀工具</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+	<script src="js/FileSaver.js"></script>
+	<script src="js/html-docx.js"></script>
 </head>
 <body>
-  <script src="lemmatizer/js/jquery.min.js"></script>
-  <script src="lemmatizer/js/words.js"></script>
-  <script src="lemmatizer/js/dict_advanced.js"></script>
-  <script src="lemmatizer/js/lemma.js"></script>
-  <script src="lemmatizer/js/rare_lemmas.js"></script>
-  <script type="text/javascript">
-	
-	function remove(array, element) {
-		const index = array.indexOf(element);
-		if(index!=-1){array.splice(index, 1);}
-	};
-	
-	lemma = lemma.concat(rare_lemmas);
-
-	function lookupWord(sentence,prohibit,lemma){
-		//抓出單字陣列
-        var tmp_words = sentence.toLowerCase().replace(/[\'\’]/g," ").replace(/[\n\d+]/g," ").replace(/[“’—”‘\".,\/#!$\?%\^&\*;:{}=\-_`~()]/g," ").split(" ").sort().filter(function(elem, index, self) {
-			return index == self.indexOf(elem) && elem.length > 2;
-		});
-		
-		var words = [];
-		
-		tmp_words.forEach(function(word){
-			var this_lemma = lemma.find(function(e){ return e.stem === word | e.extra.indexOf(word) != -1});
-			if(this_lemma){word = this_lemma.stem;}
-			words.push(word);
-		});
-		
-		
-		words=words.sort().filter(function(elem, index, self) {
-			return index == self.indexOf(elem);
-		});
-		
-		var word_basic = [];
-		var word_h1 = [];
-		var word_h2 = [];
-		var word_h3 = [];
-		var word_h4 = [];
-		var word_h5 = [];
-		var word_h6 = [];
-		
-		words.forEach(function(e){
-			if(basic_words.indexOf(e) != -1){
-				word_basic.push(e);}
-			else if(h1_words.indexOf(e) != -1){
-				word_h1.push(e);}
-			else if(h2_words.indexOf(e) != -1){
-				word_h2.push(e);}
-			else if(h3_words.indexOf(e) != -1){
-				word_h3.push(e);}
-			else if(h4_words.indexOf(e) != -1){
-				word_h4.push(e);}
-			else if(h5_words.indexOf(e) != -1){
-				word_h5.push(e);}
-			else if(h6_words.indexOf(e) != -1){
-				word_h6.push(e);}
-			});
-		if(prohibit > 0){word_basic.forEach(function(e){remove(words,e);});}
-		if(prohibit > 1){word_h1.forEach(function(e){remove(words,e);});}
-		if(prohibit > 2){word_h2.forEach(function(e){remove(words,e);});}
-		if(prohibit > 3){word_h3.forEach(function(e){remove(words,e);});}
-		if(prohibit > 4){word_h4.forEach(function(e){remove(words,e);});}
-		if(prohibit > 5){word_h5.forEach(function(e){remove(words,e);});}
-		if(prohibit > 6){word_h6.forEach(function(e){remove(words,e);});}
-		var newstring = "";
-		if(prohibit == 0) { newstring = "完全不會";}
-		if(prohibit == 1) { newstring = "國中程度";}
-		if(prohibit == 2) { newstring = "高中1級";}
-		if(prohibit == 3) { newstring = "高中2級";}
-		if(prohibit == 4) { newstring = "高中3級";}
-		if(prohibit == 5) { newstring = "高中4級";}
-		if(prohibit == 6) { newstring = "高中5級";}
-		if(prohibit == 7) { newstring = "高中6級";}
-		
-		var html_word = '<div style="border-style: solid;margin:2px;padding:2px">\n';
-		html_word  = html_word + "超出<b>"+newstring+"</b>範圍的單字，共"+words.length+"個<br/>\n";
-		
-		html_word  = html_word + "<table>\n";
-		html_word  = html_word + "<tr>\n";
-		for(var j = 0; j < 4; j++){
-			html_word = html_word + "<th>\n";
-			html_word += (j % 2) ? "解釋":"單字" ;
-			html_word = html_word + "</th>\n";
-		}html_word  = html_word + "</tr>\n";
-		var w_index = 0;
-		while(w_index != words.length){
-			html_word = html_word + "<tr>\n";
-			for(var j = 0; j < 2; j++){
-				html_word += "<td";
-				html_word += " style=\"color:red;\">\n";
-				html_word += words[w_index];
-				html_word += "</td>\n";
-				
-				html_word += "<td>\n";
-				var w_dict = dictionary.find(function(e){return e.word === words[w_index]});
-				if(w_dict){
-					html_word += w_dict.translation.replace(/\n/,"<br/>");
-				}else{html_word += "<a target=\"_blank\" href=\"https://www.collinsdictionary.com/dictionary/english-chinese/" + words[w_index] +  "\"> 查詢網路字典</a>" ;}
-				html_word += "</td>\n";
-					
-				w_index++;
-				if(w_index == words.length) {
-					break;
-				}
-			}
-		}
-		html_word  = html_word + "</table></div>\n";
-		return html_word;
-	};
-	
-	$(document).ready( function() {
-	  $("#divide-article").click( function(){
-		var tmp_article = $("#article").val().replace(/\n/g," ").replace(/\b(\w{1,}\.\w{1,})\./g,"$1&#x2E;").replace(/(Dr|Esq|Hon|Jr|Mr|Mrs|Ms|Messrs|Mmes|Msgr|Prof|Rev|Rt|Sr|St)\./g,"$1&#x2E;").replace(/\b(\w?)\.(\w)\b/g,"$1&#x2E;$2").match(/(.*?)([\.\?\!])/g);
-		
-
-		
-		var level = $("#level").val();
-		
-		//words_html = lookupWord($("#article").val(),level);
-		
-		var work_result = "";
-		var counter = 1;
-		tmp_article.forEach(function(e) {
-			work_result = work_result + "<h3>第"+counter+"句:</h3><p>" + e + "</p>\n";
-			work_result += "<p>答：<u>　　　　　　　　　　　　　　　　　　　　　</u></p>\n";
-			words_html = lookupWord(e,level,lemma);
-			work_result = work_result + words_html;
-			counter ++;
-		});
-		$("#sentence-result").html(work_result);
-      });
-	  
-	  $("#divide-article2").click( function(){
-		var tmp_article = $("#article").val().replace(/\n/g," ").replace(/\b(\w{1,}\.\w{1,})\./g,"$1&#x2E;").replace(/(Dr|Esq|Hon|Jr|Mr|Mrs|Ms|Messrs|Mmes|Msgr|Prof|Rev|Rt|Sr|St)\./g,"$1&#x2E;").replace(/\b(\w?)\.(\w)\b/g,"$1&#x2E;$2").match(/(.*?)([\.\?\!])/g);
-		
-
-		
-		var level = $("#level").val();
-		
-		//words_html = lookupWord($("#article").val(),level);
-		
-		var work_result = "";
-		var words_html = "";
-		var counter = 1;
-		work_result += "<h2>本文開始</h2>\n";
-		work_result += "<p>\n";
-		tmp_article.forEach(function(e) {
-			var sentence_number = counter > 20 ? (12880 + counter - 20) : (9311 + counter);
-			work_result += e + String.fromCharCode(sentence_number);
-			words_html += "<h3>第" + counter + "句：</h3>\n" + e + "<p>作答區:</p>\n";
-			words_html += "<p>___________________________________________________________________</p>\n";
-			words_html += "<p>單字表:</p>\n";
-			words_html += lookupWord(e,level,lemma);
-			counter++;
-		});
-		work_result += "</p>\n";
-		work_result = work_result + words_html;
-		$("#sentence-result").html(work_result);
-      });
-	  
-	  $("#level").change( function(){
-		var level = $("#level").val();
-		var newstring = "";
-		if(level == 0) { newstring = "完全不會";}
-		if(level == 1) { newstring = "國中程度";}
-		if(level == 2) { newstring = "高中1級";}
-		if(level == 3) { newstring = "高中2級";}
-		if(level == 4) { newstring = "高中3級";}
-		if(level == 5) { newstring = "高中4級";}
-		if(level == 6) { newstring = "高中5級";}
-		if(level == 7) { newstring = "高中6級";}
-		$("#slevel1").text(newstring);
-		$("#slevel2").text(newstring);
-	
-	  });
-    });
-  </script>
-  <div class="result">
-	<div id="word-result"></div>
-	<h1>處理結果：</h1>
-	<div id="sentence-result"></div>
+  <script src="js/words.js"></script>
+  <script src="js/dict_advanced.js"></script>
+  <script src="js/lemma.js"></script>
+  <script src="js/rare_lemmas.js"></script>
+  <script src="js/sentence_splitter_advanced.js"></script>
+<div class="container">
+	<h1>英文閱讀字典＆斷句輔助</h1>
+	<div class="jumbotron">
+			<form id="articleInputForm">
+				<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+					<label for="level">單字程度：<span id="slevel">高中2級 </span></lable>
+					<input id="level" max="7" min="0" type="range" value="3"/ placeholder="預設高中2級" onchange='change_level_text("level","slevel");'>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label for"totalgrade">出題總分</label>
+						<input id="totalgrade" type="number"  value="100"/ placeholder="預設100分">
+					</div>
+				</div>
+				</div>
+					<div class="form-group">
+						<label for="article">文章輸入區</label><br/>
+						<textarea class="form-control" placeholder="在此輸入文章內容" id="article" rows="12"></textarea>
+					</div>
+					<input type="button" value="處理文章 斷句形式" class="btn btn-primary" onclick='split_article_normal("article","level","totalgrade","sentence-result");' data-toggle="modal" data-target="#result"></input>
+					<input type="button" value="處理文章 編號形式" class="btn btn-primary" onclick='split_article_indexed("article","level","totalgrade","sentence-result");' data-toggle="modal" data-target="#result"></input>
+			</form>
+	</div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="result" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+				<h4 class="modal-title" id="myModalLabel">處理結果：</h4>
+				<button class="btn btn-primary" onclick='downloadInnerHtml("splitted.doc","sentence-result")'>下載文件</button>  
+				<button class="btn btn-primary" onclick='printDiv("sentence-result")'>列印結果</button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body" id="sentence-result" >
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
   </div>
-  <div class="input">
-  <button id="divide-article">處理文章 斷句形式</button>
-  <button id="divide-article2">處理文章 標號形式</button>
-	<form action="">
-		<h2>要處理的文章:</h2>
-		<h3 id="showlevel">單字程度：<span id="slevel2">高中2級</span></h3>
-		<p><input type="range" id="level" min="0" max="7"  value=3></p>
-		<input id="result_words" type="hidden" />
-		<textarea id='article' rows="20"></textarea>
-	</form>
-  </div>
+</div>
+<iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
 </body>
 </html>

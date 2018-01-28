@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html">
+<head>
+	<meta charset="UTF-8">
+	<title>英文閱讀工具</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+	<script src="js/FileSaver.js"></script>
+	<script src="js/html-docx.js"></script>
+</head>
+<body>
+  <script src="js/words.js"></script>
+	<script src="js/boyodict.js"></script>
+  <script src="js/dict_advanced.js"></script>
+  <script src="js/lemma.js"></script>
+  <script src="js/rare_lemmas.js"></script>
+  <script src="js/sentence_splitter_boyo.js"></script>
+<div class="container">
+	<h1>英文閱讀字典＆斷句輔助</h1>
+	<div class="jumbotron">
+			<form id="articleInputForm">
+				<div class="row">
+				<div class="col-sm-6">
+					<div class="form-group">
+					<label for="level">單字程度：<span id="slevel">博幼國小400單字全</span></lable><br>
+					<input id="level" max="86" min="1" type="range" value=45/ placeholder="博幼國小400單字全" onchange='change_level_text("level","slevel");' style="width:25em">
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="form-group">
+						<label for"totalgrade">出題總分</label>
+						<input id="totalgrade" type="number"  value="100"/ placeholder="預設100分">
+					</div>
+				</div>
+				</div>
+					<div class="form-group">
+						<label for="article">文章輸入區</label><br/>
+						<textarea class="form-control" placeholder="在此輸入文章內容" id="article" rows="12"></textarea>
+					</div>
+					<input type="button" value="處理文章 斷句形式" class="btn btn-primary" onclick='split_article_normal("article","level","totalgrade","sentence-result");' data-toggle="modal" data-target="#result"></input>
+					<input type="button" value="處理文章 編號形式" class="btn btn-primary" onclick='split_article_indexed("article","level","totalgrade","sentence-result");' data-toggle="modal" data-target="#result"></input>
+			</form>
+	</div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="result" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+				<h4 class="modal-title" id="myModalLabel">處理結果：</h4>
+				<button class="btn btn-primary" onclick='downloadInnerHtml("splitted.doc","sentence-result")'>下載文件</button>
+				<button class="btn btn-primary" onclick='printDiv("sentence-result")'>列印結果</button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body" id="sentence-result" >
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
+</body>
+</html>
